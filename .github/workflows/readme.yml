@@ -11,7 +11,7 @@ on:
 
 jobs:
   update:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: write # Required to allow the action to update the README file
     steps:
