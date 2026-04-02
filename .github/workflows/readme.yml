@@ -1,8 +1,25 @@
 name: App Readme Generator
-on: push
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  schedule:
+    - cron: '0 0 * * *' # Runs at 00:00 every day
+  # workflow_dispatch: # Allows manual trigger
+
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to allow the action to update the README file
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
       - name: GitHub README Generator
         uses: th3c0d3br34ker/github-readme-info@1.0.2
+        with:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          TIMEZONE: "Asia/Kolkata"
