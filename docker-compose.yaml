@@ -1,0 +1,75 @@
+# ========================================
+# Docker Compose Configuration
+# Modern Node.js Todo Application
+# ========================================
+version: "3.8"
+services:
+  # ========================================
+  # Devekopment
+  # ========================================
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    # volumes:
+    #   - ./frontend:/app
+    #   - /app/node_modules
+    depends_on:
+      - backend-dev
+    profiles:
+      - dev
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+        - action: sync
+          path: ./frontend/public
+          target: /public
+        - action: rebuild
+          path: ./frontend/package.json
+
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    env_file:
+      - ./backend/.env
+    # volumes:
+    #   - ./backend:/app
+    #   - /app/node_modules
+    depends_on:
+      - mongo
+    profiles:
+      - dev
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./backend/package.json
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - "/home/prakul/Documents/Coding/2026 Coding/docker-volume/db_data/mongo-second-brain:/data/db"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    profiles:
+      - dev
+      - prod
+# # ========================================
+# Production
+# # ========================================

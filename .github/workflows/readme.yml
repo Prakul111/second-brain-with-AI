@@ -1,0 +1,8 @@
+name: App Readme Generator
+on: push
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: GitHub README Generator
+        uses: th3c0d3br34ker/github-readme-info@1.0.2
