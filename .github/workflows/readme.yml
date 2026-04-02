@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: GitHub README Generator
-        uses: th3c0d3br34ker/github-readme-info@1.0.2
+        uses: bitflight-devops/github-action-readme-generator@v1.10.3
         with:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           TIMEZONE: "Asia/Kolkata"
