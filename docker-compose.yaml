@@ -13,9 +13,9 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "5173:5173"
-    # volumes:
-    #   - ./frontend:/app
-    #   - /app/node_modules
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend-dev
     profiles:
@@ -39,9 +39,9 @@ services:
       - 3000:3000
     env_file:
       - ./backend/.env
-    # volumes:
-    #   - ./backend:/app
-    #   - /app/node_modules
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
     depends_on:
       - mongo
     profiles:
@@ -63,13 +63,14 @@ services:
     volumes:
       - "/home/prakul/Documents/Coding/2026 Coding/docker-volume/db_data/mongo-second-brain:/data/db"
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5
     profiles:
       - dev
       - prod
+
 # # ========================================
 # Production
 # # ========================================

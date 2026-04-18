@@ -1,16 +1,17 @@
 import mongoose, { Schema } from 'mongoose';
 
-const userSchema = new Schema({
-  username: { type: String, unique: true },
-  password: String,
-  email: String,
-});
 
 // const adminSchema = new Schema({
 //   username: { type: String, unique: true },
 //   password: String,
 //   email: String,
 // });
+
+const userSchema = new Schema({
+  username: { type: String, unique: true },
+  password: String,
+  email: String,
+});
 
 const contentSchema = new Schema({
   title: String,
@@ -19,8 +20,14 @@ const contentSchema = new Schema({
   userId: [{ type: mongoose.Types.ObjectId, ref: 'User', required: true }],
 });
 
-const UserModel = mongoose.model('user', userSchema);
-// const AdminModel = mongoose.model('admin', adminSchema);
-const ContentModel = mongoose.model('course', contentSchema);
+const linkSchema = new Schema({
+  hash: String,
+  userId: { type: mongoose.Types.ObjectId, ref: 'User', required: true, unique: true },
+});
 
-export { UserModel, ContentModel };
+const UserModel = mongoose.model('User', userSchema);
+const ContentModel = mongoose.model('Content', contentSchema);
+const LinkModel = mongoose.model('Link', linkSchema);
+// const AdminModel = mongoose.model('admin', adminSchema);
+
+export { UserModel, ContentModel, LinkModel };

@@ -1,25 +1,30 @@
 name: App Readme Generator
-
-on:
-  push:
-    branches:
-      - main
-      - master
-  schedule:
-    - cron: '0 0 * * *' # Runs at 00:00 every day
-  # workflow_dispatch: # Allows manual trigger
-
+on: push
 jobs:
-  update:
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: write # Required to allow the action to update the README file
+  generate-readme:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: GitHub README Generator
-        uses: bitflight-devops/github-action-readme-generator@v1.10.3
-        with:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          TIMEZONE: "Asia/Kolkata"
+      - name: Generate README
+        run: |
+          echo "# My Second Brain" > README.md
+          echo "## Overview" >> README.md
+          echo "This is a simple todo application." >> README.md
+          echo "## Features" >> README.md
+          echo "- Todo list" >> README.md
+          echo "- User authentication" >> README.md
+          echo "## Tech Stack" >> README.md
+          echo "- Node.js" >> README.md
+          echo "- Express.js" >> README.md
+          echo "- MongoDB" >> README.md
+          echo "## Installation" >> README.md
+          echo "1. Clone the repository" >> README.md
+          echo "2. Run `npm install`" >> README.md
+          echo "3. Run `npm start`" >> README.md
+          echo "## Usage" >> README.md
+          echo "1. Open `http://localhost:3000`" >> README.md
+          echo "2. Register a new account" >> README.md
+          echo "3. Login and start using the app" >> README.md
+          echo "## License" >> README.md
+          echo "MIT" >> README.md

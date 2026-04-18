@@ -1,19 +1,21 @@
 import express from 'express';
-import { UserModel, ContentModel } from './db.js';
+import { UserModel, ContentModel, LinkModel } from './db.ts';
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-// import * as bcrypt from 'bcrypt';
 import 'dotenv/config';
-import { userMiddleware } from './middleware.js';
+import { userMiddleware } from './middleware.ts';
+import { random } from './utils.ts';
+import cors from "cors"
 
 const app = express();
 app.use(express.json());
+app.use(cors())
 
 const mongoUrl = process.env.MONGODB_URL as string;
 const jwtToken = process.env.JWT_PASSWORD as string;
 
-app.post('/api/v1/user/signup', async (req, res) => {
+app.post('/api/v1/signup', async (req, res) => {
   const { username, email, password } = req.body;
 
   // hasing the password
@@ -40,7 +42,7 @@ app.post('/api/v1/user/signup', async (req, res) => {
   }
 });
 
-app.post('/api/v1/user/signin', async (req, res) => {
+app.post('/api/v1/signin', async (req, res) => {
   const { email, password } = req.body;
 
   const userRequired: any = await UserModel.findOne({
@@ -107,9 +109,11 @@ app.post('/api/v1/content', userMiddleware, async (req, res) => {
 app.get('/api/v1/content', userMiddleware, async (req, res) => {
   // @ts-ignore
   const userId = req.userId;
-  const content = ContentModel.find({
-    userId: userId,
-  }).populate('userId', 'username');
+  const content = await ContentModel
+    .find({
+      userId: userId,
+    })
+    .populate('userId', 'username');
   res.json({
     content,
   });
@@ -117,10 +121,11 @@ app.get('/api/v1/content', userMiddleware, async (req, res) => {
 
 app.delete('/api/v1/content', userMiddleware, async (req, res) => {
   const contentId = req.body.contentId;
+  // @ts-ignore
+  const userId = req.userId;
 
   await ContentModel.deleteOne({
     contentId,
-    // @ts-ignore
     userId: userId,
   });
 
@@ -129,17 +134,74 @@ app.delete('/api/v1/content', userMiddleware, async (req, res) => {
   });
 });
 
-app.post('/api/v1/brain/share', (req, res) => {
-  res.json({
-    message: 'add a course',
-  });
-});
+// app.post('/api/v1/brain/share', userMiddleware, async (req, res) => {
+//   const { share } = req.body;
+//   if (share) {
+//     const existingLink = await LinkModel.findOne({
+//       // @ts-ignore
+//       userId: req.userId
+//     })
+//     if (existingLink) {
 
-app.get('/api/v1/brain/:shareLink', (req, res) => {
-  res.json({
-    message: 'add a course',
-  });
-});
+//       res.json({
+//         hash: existingLink.hash
+//       })
+
+//       return
+//     }
+//     const hash = random(10)
+//     await LinkModel.create({
+//       // @ts-ignore
+//       userId: req.userId,
+//       hash: hash
+//     })
+
+//     res.json({
+//       message: "/share/" + hash
+//     })
+//   } else await LinkModel.deleteOne({
+//     // @ts-ignore
+//     userId: req.userId
+//   })
+
+//   res.json({
+//     message: 'remove link',
+//   });
+// });
+
+// app.get('/api/v1/brain/:sharelink', async (req, res) => {
+//   const hash = req.params.sharelink
+
+//   const link = await LinkModel.findOne({
+//     hash,
+//   })
+
+//   if (!link) {
+//     res.status(411).json({
+//       message: "Incorrect Input"
+//     })
+//     return
+//   }
+
+//   const content = await ContentModel.find({
+//     userId: link.userId
+//   })
+
+//   const user = await UserModel.findOne({
+//     _id: link.userId.toString()
+//   })
+//   if (!user) {
+//     res.status(411).json({
+//       message: "user not found error"
+//     })
+//     return
+//   }
+
+//   res.json({
+//     username: user.username,
+//     content: content
+//   });
+// });
 
 async function main() {
   await mongoose.connect(mongoUrl);
