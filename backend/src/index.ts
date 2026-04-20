@@ -90,12 +90,14 @@ app.post('/api/v1/signin', async (req, res) => {
   // }
 });
 
-app.post('/api/v1/content', userMiddleware, async (req, res) => {
+app.post('/api/v1/content', userMiddleware, async (req, res) => { 
   const { link, title } = req.body;
 
   await ContentModel.create({
     link,
     title,
+    // @ts-ignore
+    title: req.body.title,
     // @ts-ignore
     userId: req.userId,
     tags: [],
@@ -134,74 +136,74 @@ app.delete('/api/v1/content', userMiddleware, async (req, res) => {
   });
 });
 
-// app.post('/api/v1/brain/share', userMiddleware, async (req, res) => {
-//   const { share } = req.body;
-//   if (share) {
-//     const existingLink = await LinkModel.findOne({
-//       // @ts-ignore
-//       userId: req.userId
-//     })
-//     if (existingLink) {
+app.post('/api/v1/brain/share', userMiddleware, async (req, res) => {
+  const { share } = req.body;
+  if (share) {
+    const existingLink = await LinkModel.findOne({
+      // @ts-ignore
+      userId: req.userId
+    })
+    if (existingLink) {
 
-//       res.json({
-//         hash: existingLink.hash
-//       })
+      res.json({
+        hash: existingLink.hash
+      })
 
-//       return
-//     }
-//     const hash = random(10)
-//     await LinkModel.create({
-//       // @ts-ignore
-//       userId: req.userId,
-//       hash: hash
-//     })
+      return
+    }
+    const hash = random(10)
+    await LinkModel.create({
+      // @ts-ignore
+      userId: req.userId,
+      hash: hash
+    })
 
-//     res.json({
-//       message: "/share/" + hash
-//     })
-//   } else await LinkModel.deleteOne({
-//     // @ts-ignore
-//     userId: req.userId
-//   })
+    res.json({
+      message: "/share/" + hash
+    })
+  } else await LinkModel.deleteOne({
+    // @ts-ignore
+    userId: req.userId
+  })
 
-//   res.json({
-//     message: 'remove link',
-//   });
-// });
+  res.json({
+    message: 'remove link',
+  });
+});
 
-// app.get('/api/v1/brain/:sharelink', async (req, res) => {
-//   const hash = req.params.sharelink
+app.get('/api/v1/brain/:sharelink', async (req, res) => {
+  const hash = req.params.sharelink
 
-//   const link = await LinkModel.findOne({
-//     hash,
-//   })
+  const link = await LinkModel.findOne({
+    hash,
+  })
 
-//   if (!link) {
-//     res.status(411).json({
-//       message: "Incorrect Input"
-//     })
-//     return
-//   }
+  if (!link) {
+    res.status(411).json({
+      message: "Incorrect Input"
+    })
+    return
+  }
 
-//   const content = await ContentModel.find({
-//     userId: link.userId
-//   })
+  const content = await ContentModel.find({
+    userId: link.userId
+  })
 
-//   const user = await UserModel.findOne({
-//     _id: link.userId.toString()
-//   })
-//   if (!user) {
-//     res.status(411).json({
-//       message: "user not found error"
-//     })
-//     return
-//   }
+  const user = await UserModel.findOne({
+    _id: link.userId.toString()
+  })
+  if (!user) {
+    res.status(411).json({
+      message: "user not found error"
+    })
+    return
+  }
 
-//   res.json({
-//     username: user.username,
-//     content: content
-//   });
-// });
+  res.json({
+    username: user.username,
+    content: content
+  });
+});
 
 async function main() {
   await mongoose.connect(mongoUrl);
