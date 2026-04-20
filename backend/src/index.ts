@@ -18,9 +18,6 @@ const jwtToken = process.env.JWT_PASSWORD as string;
 app.post('/api/v1/signup', async (req, res) => {
   const { username, email, password } = req.body;
 
-  // hasing the password
-
-  // use input validation / zod
 
   try {
     const hashedPassword = await bcrypt.hash(password, 5);
@@ -43,14 +40,14 @@ app.post('/api/v1/signup', async (req, res) => {
 });
 
 app.post('/api/v1/signin', async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
   const userRequired: any = await UserModel.findOne({
-    email,
+    username,
   });
 
   if (!userRequired) {
-    res.json({
+    return res.status(403).json({
       message: "User dosen't exists",
     });
   }
@@ -90,12 +87,13 @@ app.post('/api/v1/signin', async (req, res) => {
   // }
 });
 
-app.post('/api/v1/content', userMiddleware, async (req, res) => { 
-  const { link, title } = req.body;
+app.post('/api/v1/content', userMiddleware, async (req, res) => {
+  const { link, title, type } = req.body;
 
   await ContentModel.create({
     link,
     title,
+    type,
     // @ts-ignore
     title: req.body.title,
     // @ts-ignore
